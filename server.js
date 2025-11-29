@@ -27,6 +27,17 @@ exports.handler = async (event, context) => {
   // Handle GET request
   if (event.httpMethod === 'GET') {
     try {
+      const path = event.path.replace('/.netlify/functions/server', '').replace('/server', '') || '/';
+      
+      // Health check endpoint
+      if (path === '/health' || event.path.includes('/health')) {
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ status: 'ok' })
+        };
+      }
+
       // Main endpoint - returns JSON with all whitelisted usernames
       const { data, error } = await supabase
         .from('whitelist')
